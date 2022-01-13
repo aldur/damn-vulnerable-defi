@@ -26,6 +26,10 @@ contract ReceiverUnstoppable {
         require(IERC20(tokenAddress).transfer(msg.sender, amount), "Transfer of tokens failed");
     }
 
+    function sendTokens(address tokenAddress, uint256 amount) external {
+        require(IERC20(tokenAddress).transfer(address(pool), amount), "Transfer of tokens failed");
+    }
+
     function executeFlashLoan(uint256 amount) external {
         require(msg.sender == owner, "Only owner can execute flash loan");
         pool.flashLoan(amount);
